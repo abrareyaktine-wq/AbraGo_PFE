@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AbraGo - Driver Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1A3BAA;
+            --primary-light: #2F5BFF;
+            --bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text: #1A2340;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --success: #16A34A;
+            --warning: #D97706;
+            --danger: #DC2626;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .header-bar {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(26, 59, 170, 0.15);
+        }
+
+        .header-title h1 {
+            font-size: 20px;
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .header-title p {
+            font-size: 12px;
+            opacity: 0.8;
+            margin: 2px 0 0 0;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .wallet-card {
+            background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+        }
+
+        .wallet-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            margin-bottom: 6px;
+        }
+
+        .wallet-balance {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .wallet-history h3 {
+            font-size: 13px;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+        }
+
+        .tx-list {
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .tx-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .tx-item:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin: 24px 0 12px 0;
+            color: var(--text);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge-count {
+            background-color: var(--primary-light);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .parcel-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .parcel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+
+        .parcel-id {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary-light);
+        }
+
+        .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+
+        .badge-created { background: #DBEAFE; color: #1E40AF; }
+        .badge-picked { background: #FEF3C7; color: #92400E; }
+        .badge-transit { background: #E0F2FE; color: #0369A1; }
+        .badge-delivered { background: #D1FAE5; color: #065F46; }
+        .badge-refused { background: #FEE2E2; color: var(--danger); }
+
+        .parcel-row {
+            display: flex;
+            margin: 6px 0;
+            font-size: 13px;
+        }
+
+        .parcel-label {
+            width: 100px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .parcel-value {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .update-box {
+            background-color: var(--bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 14px;
+            border: 1px dashed var(--border);
+        }
+
+        .update-box h4 {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            margin-bottom: 12px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .cod-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .btn-update {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-update:hover {
+            background-color: #15803D;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert-messages {
+            list-style: none;
+            margin: 0 0 20px 0;
+            padding: 0;
+        }
+
+        .alert-item {
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .alert-item.success {
+            background-color: #DCFCE7;
+            color: var(--success);
+            border: 1px solid #BBF7D0;
+        }
+
+        .alert-item.warning {
+            background-color: #FEF3C7;
+            color: var(--warning);
+            border: 1px solid #FDE68A;
+        .location-manager {
+            margin-bottom: 24px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        }
+
+        .location-manager form {
+            display: flex;
+            gap: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .header-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .btn-logout {
+                width: 100%;
+                text-align: center;
+                box-sizing: border-box;
+            }
+            .location-manager {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .location-manager form {
+                width: 100%;
+                flex-direction: column;
+            }
+            .location-manager form select {
+                width: 100% !important;
+            }
+            .location-manager form button {
+                width: 100% !important;
+            }
+            .parcel-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .parcel-row {
+                flex-direction: column;
+                gap: 4px;
+                margin-bottom: 12px;
+            }
+            .wallet-balance {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="header-title">
+            <h1>{{ driver.full_name }}</h1>
+            <p>Vehicle: {{ driver.vehicle }} | City: {{ driver.city }}</p>
+        </div>
+        <a href="{% url 'driver_logout' %}" class="btn-logout">Log Off</a>
+    </div>
+
+    <div class="container">
+        {% if messages %}
+            <ul class="alert-messages">
+                {% for message in messages %}
+                    <li class="alert-item {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- LOCATION MANAGER -->
+        <div class="wallet-card location-manager">
+            <div>
+                <div class="wallet-label">Current Location</div>
+                <div style="font-size: 20px; font-weight: 700; color: white;">📍 {{ driver.city }}</div>
+            </div>
+            <form method="POST" action="{% url 'driver_update_city' %}">
+                {% csrf_token %}
+                <select name="city" class="form-control" style="margin: 0; width: 140px; padding: 8px; border-radius: 8px;" required>
+                    <option value="" disabled>Select city...</option>
+                    {% for city in cities %}
+                    <option value="{{ city.name }}" {% if driver.city == city.name %}selected{% endif %}>{{ city.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn-update" style="width: auto; padding: 8px 16px;">Update</button>
+            </form>
+        </div>
+
+        <!-- WALLET CARD -->
+        <div class="wallet-card">
+            <div class="wallet-label">Earnings & COD Collected</div>
+            <div class="wallet-balance">{{ wallet.balance }} MAD</div>
+            
+            <div class="wallet-history">
+                <h3>Recent Transactions</h3>
+                <div class="tx-list">
+                    {% for tx in transactions %}
+                        <div class="tx-item">
+                            <span>
+                                <strong>{{ tx.get_transaction_type_display }}</strong>
+                                {% if tx.parcel %} - {{ tx.parcel.tracking_number }}{% endif %}
+                            </span>
+                            <span style="font-weight:700;">+{{ tx.amount }} MAD</span>
+                        </div>
+                    {% empty %}
+                        <div style="opacity:0.6;">No transactions recorded.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIVE JOBS -->
+        <div class="section-title">
+            <span>Active Deliveries</span>
+            <span class="badge-count">{{ active_parcels.count }}</span>
+        </div>
+
+        {% for parcel in active_parcels %}
+            <div class="parcel-card">
+                <div class="parcel-header">
+                    <span class="parcel-id">{{ parcel.tracking_number }}</span>
+                    <span class="badge badge-{% if parcel.status == 'CREATED' %}created{% elif parcel.status == 'PICKED_UP' %}picked{% else %}transit{% endif %}">
+                        {{ parcel.get_status_display }}
+                    </span>
+                </div>
+                
+                <div class="parcel-row">
+                    <span class="parcel-label">Receiver:</span>
+                    <span class="parcel-value">{{ parcel.receiver_name }}</span>
+                </div>
+                <div class="parcel-row">
+                    <span class="parcel-label">Phone:</span>
+                    <span class="parcel-value">
+                        <a href="tel:{{ parcel.receiver_phone }}" style="color:var(--primary-light);text-decoration:none;">📞 {{ parcel.receiver_phone }}</a>
+                    </span>
+                </div>
+                <div class="parcel-row">
+                    <span class="parcel-label">Address:</span>
+                    <span class="parcel-value">{{ parcel.delivery_address }}, {{ parcel.destination_city }}</span>
+                </div>
+                <div class="parcel-row">
+                    <span class="parcel-label">COD Amount:</span>
+                    <span class="parcel-value" style="color:var(--warning);">{{ parcel.amount }} MAD</span>
+                </div>
+
+                <div class="update-box">
+                    <h4>Update Delivery Status</h4>
+                    <form method="POST" action="{% url 'driver_update_status' parcel.tracking_number %}">
+                        {% csrf_token %}
+                        <select name="status" class="form-select" onchange="toggleGarageSelect(this, '{{ parcel.tracking_number }}')" required>
+                            <option value="" disabled selected>Select new status...</option>
+                            {% for code, label in status_choices %}
+                                <option value="{{ code }}" {% if parcel.status == code %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                        <div id="garage-select-{{ parcel.tracking_number }}" style="display: none; margin-bottom: 10px;">
+                            <select name="garage_id" class="form-select">
+                                <option value="" disabled selected>Select Garage Hub...</option>
+                                {% for garage in garages %}
+                                    <option value="{{ garage.id }}">{{ garage.name }} ({{ garage.address }})</option>
+                                {% empty %}
+                                    <option value="" disabled>No garages available in your city</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <input type="text" name="note" class="form-control" placeholder="Add optional delivery note...">
+
+                        <label class="cod-checkbox">
+                            <input type="checkbox" name="is_cod_paid" {% if parcel.is_cod_paid %}checked{% endif %}>
+                            <span>Confirm COD cash collected from receiver</span>
+                        </label>
+
+                        <button type="submit" class="btn-update">Update & Save</button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <div class="parcel-card empty-state">
+                No active deliveries assigned to you.
+            </div>
+        {% endfor %}
+
+        <!-- COMPLETED JOBS -->
+        <div class="section-title">
+            <span>Completed/Refused Deliveries</span>
+            <span class="badge-count" style="background-color:var(--success);">{{ completed_parcels.count }}</span>
+        </div>
+
+        {% for parcel in completed_parcels %}
+            <div class="parcel-card" style="opacity:0.85;">
+                <div class="parcel-header">
+                    <span class="parcel-id" style="color:{% if parcel.status == 'DELIVERED' %}var(--success){% else %}var(--danger){% endif %};">{{ parcel.tracking_number }}</span>
+                    <span class="badge badge-{% if parcel.status == 'DELIVERED' %}delivered{% else %}refused{% endif %}">
+                        {{ parcel.get_status_display }}
+                    </span>
+                </div>
+                <div class="parcel-row">
+                    <span class="parcel-label">Receiver:</span>
+                    <span class="parcel-value">{{ parcel.receiver_name }}</span>
+                </div>
+                <div class="parcel-row">
+                    <span class="parcel-label">Address:</span>
+                    <span class="parcel-value">{{ parcel.delivery_address }}, {{ parcel.destination_city }}</span>
+                </div>
+                <div class="parcel-row">
+                    <span class="parcel-label">Payment Status:</span>
+                    <span class="parcel-value" style="color:{% if parcel.payment_status == 'PAID' %}var(--success){% else %}var(--danger){% endif %};">
+                        {{ parcel.get_payment_status_display }} ({{ parcel.amount }} MAD)
+                    </span>
+                </div>
+            </div>
+        {% empty %}
+            <div class="parcel-card empty-state">
+                No completed or refused deliveries.
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+    function toggleGarageSelect(selectElement, trackingNumber) {
+        const garageDiv = document.getElementById('garage-select-' + trackingNumber);
+        const garageSelect = garageDiv.querySelector('select');
+        if (selectElement.value === 'AT_GARAGE') {
+            garageDiv.style.display = 'block';
+            garageSelect.required = true;
+        } else {
+            garageDiv.style.display = 'none';
+            garageSelect.required = false;
+        }
+    }
+    </script>
+</body>
+</html>

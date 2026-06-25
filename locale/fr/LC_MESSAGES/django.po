@@ -1,0 +1,70 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-11 20:00+0100\n"
+"PO-Revision-Date: 2026-06-11 20:00+0100\n"
+"Last-Translator: Admin <admin@abrago.ma>\n"
+"Language-Team: French <fr@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Dashboard"
+msgstr "Tableau de Bord"
+
+msgid "Packages"
+msgstr "Colis"
+
+msgid "Create Label"
+msgstr "Créer une Étiquette"
+
+msgid "Invoices"
+msgstr "Factures"
+
+msgid "Load & Batch Mgmt"
+msgstr "Gestion des Lots"
+
+msgid "Wallet & Earnings"
+msgstr "Portefeuille et Gains"
+
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Customer Support"
+msgstr "Service Client"
+
+msgid "Recent Package Activity"
+msgstr "Activité Récente des Colis"
+
+msgid "Current Balance"
+msgstr "Solde Actuel"
+
+msgid "Pending Payout"
+msgstr "Paiement en Attente"
+
+msgid "Delivery Success Rate"
+msgstr "Taux de Livraison"
+
+msgid "Top Performance Routes"
+msgstr "Meilleurs Itinéraires"
+
+msgid "Create Package"
+msgstr "Créer un Colis"
+
+msgid "Package List"
+msgstr "Liste des Colis"
+
+msgid "Package Details"
+msgstr "Détails du Colis"
+
+msgid "Tracking (Client)"
+msgstr "Suivi (Client)"
+
+msgid "Wallet"
+msgstr "Portefeuille"
+
+msgid "Logout"
+msgstr "Déconnexion"

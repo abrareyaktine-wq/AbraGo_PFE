@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AbraGo Logistics - Fast & Reliable Delivery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1A3BAA;
+            --primary-light: #2F5BFF;
+            --primary-dark: #0D226B;
+            --secondary: #00D1FF;
+            --bg: #F8FAFC;
+            --text: #0F172A;
+            --text-muted: #64748B;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Animated Background Pattern */
+        .bg-pattern {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(47, 91, 255, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 209, 255, 0.08), transparent 25%);
+            background-color: #F8FAFC;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span {
+            color: var(--secondary);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(26, 59, 170, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: 2px solid var(--primary);
+            box-shadow: 0 8px 20px rgba(26, 59, 170, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(47, 91, 255, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 60px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .hero-badge {
+            background: rgba(47, 91, 255, 0.1);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 64px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin: 0 0 24px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            max-width: 800px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-muted);
+            margin: 0 0 48px 0;
+            max-width: 600px;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        /* Tracking Card (Glassmorphism) */
+        .tracking-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.5);
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .tracking-card h2 {
+            margin: 0 0 24px 0;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .tracking-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .tracking-input {
+            flex: 1;
+            padding: 16px 24px;
+            border: 2px solid transparent;
+            background: rgba(0,0,0,0.03);
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--text);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .tracking-input:focus {
+            background: white;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(47, 91, 255, 0.1);
+        }
+
+        .tracking-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            padding: 0 32px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tracking-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(47, 91, 255, 0.25);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(26, 59, 170, 0.08);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(47, 91, 255, 0.1);
+            color: var(--primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 24px;
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0 0 12px 0;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Driver Application Section */
+        .driver-section {
+            background: var(--primary-dark);
+            color: white;
+            padding: 100px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .driver-section::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 50%; height: 100%;
+            background: radial-gradient(circle, rgba(0, 209, 255, 0.15) 0%, transparent 70%);
+        }
+
+        .driver-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .driver-text h2 {
+            font-size: 48px;
+            font-weight: 900;
+            margin: 0 0 24px 0;
+            line-height: 1.2;
+        }
+
+        .driver-text p {
+            font-size: 18px;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.6;
+            margin: 0 0 32px 0;
+        }
+
+        .driver-form {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            color: var(--text);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .driver-form h3 {
+            margin: 0 0 24px 0;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            box-sizing: border-box;
+            background: var(--bg);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(47, 91, 255, 0.2);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #DCFCE7;
+            color: #16A34A;
+            border: 1px solid #BBF7D0;
+        }
+
+        .alert-error {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+
+        /* Footer */
+        footer {
+            background: #091334;
+            color: rgba(255,255,255,0.6);
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .driver-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .driver-text h2 {
+                font-size: 36px;
+            }
+            .hero h1 {
+                font-size: 48px;
+            }
+            .tracking-form {
+                flex-direction: column;
+            }
+            .tracking-btn {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 12px 16px;
+            }
+            .nav-buttons {
+                display: flex;
+                gap: 8px;
+            }
+            .btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            .logo {
+                font-size: 22px;
+            }
+            .hero {
+                padding-top: 100px;
+            }
+            .hero h1 {
+                font-size: 36px;
+            }
+            .tracking-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="#" class="logo">Abra<span>Go</span></a>
+        <div class="nav-buttons">
+            <a href="{% url 'driver_login' %}" class="btn btn-outline">Driver Portal</a>
+            <a href="{% url 'home' %}" class="btn btn-primary">Admin Login</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">Next-Generation Logistics</div>
+        <h1>Deliveries Made Fast, Simple, and Secure.</h1>
+        <p>Track your packages in real-time or join our fleet of professional drivers to start earning today across Morocco.</p>
+
+        <!-- Tracking Form -->
+        <div class="tracking-card">
+            <h2>Track Your Package</h2>
+            <form class="tracking-form" action="{% url 'tracking' %}" method="GET">
+                <input type="text" name="tracking_number" class="tracking-input" placeholder="Enter Tracking ID (e.g., ABR123)" required>
+                <button type="submit" class="tracking-btn">Track Now</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>Lightning Fast</h3>
+            <p>Our optimized routing algorithms ensure your packages reach their destination in record time, every time.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <h3>Highly Secure</h3>
+            <p>End-to-end tracking, driver verification, and guaranteed delivery signatures keep your cargo safe.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📍</div>
+            <h3>Nationwide Network</h3>
+            <p>From Tanger to La Güera, our vast network of drivers connects all major Moroccan cities effortlessly.</p>
+        </div>
+    </section>
+
+    <!-- Driver Application Section -->
+    <section class="driver-section" id="apply">
+        <div class="driver-container">
+            <div class="driver-text">
+                <h2>Drive with AbraGo. Earn on your own terms.</h2>
+                <p>Join Morocco's fastest-growing logistics network. Set your own schedule, utilize your own vehicle, and get paid securely for every delivery you complete.</p>
+                
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
+                        <span style="background:var(--secondary);color:#000;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">✓</span> Highly competitive payouts
+                    </li>
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
+                        <span style="background:var(--secondary);color:#000;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">✓</span> Guaranteed weekly payments
+                    </li>
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
+                        <span style="background:var(--secondary);color:#000;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">✓</span> Support 24/7
+                    </li>
+                </ul>
+            </div>
+
+            <div class="driver-form">
+                <h3>Submit an Application</h3>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST" action="{% url 'landing_page' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="full_name" class="form-control" placeholder="e.g. Youssef Alaoui" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" class="form-control" placeholder="youssef@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" name="phone" class="form-control" placeholder="+212 600 000 000" required>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">City</label>
+                            <select name="city" class="form-control" required>
+                                <option value="" disabled selected>Select city</option>
+                                {% for city in cities %}
+                                    <option value="{{ city.name }}">{{ city.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Vehicle Type</label>
+                            <select name="vehicle" class="form-control" required>
+                                <option value="" disabled selected>Select vehicle</option>
+                                <option value="Motorcycle">Motorcycle</option>
+                                <option value="Car">Car</option>
+                                <option value="Van">Van / Truck</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Submit Application</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 AbraGo Logistics. All rights reserved.
+    </footer>
+</body>
+</html>

@@ -1,0 +1,536 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AbraGo - Track Parcel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1A3BAA;
+            --primary-light: #2F5BFF;
+            --bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text: #1A2340;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --success: #16A34A;
+            --warning: #D97706;
+            --danger: #DC2626;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .tracking-container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+        .search-card h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+            color: var(--primary);
+        }
+
+        .search-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 0 0 20px 0;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-control {
+            font-family: inherit;
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-light);
+        }
+
+        .btn-search {
+            font-family: inherit;
+            background-color: var(--primary);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(26, 59, 170, 0.25);
+            transition: all 0.2s;
+        }
+
+        .btn-search:hover {
+            background-color: var(--primary-light);
+        }
+
+        .btn-scan-trigger {
+            background-color: #F1F5F9;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .btn-scan-trigger:hover {
+            background-color: #E2E8F0;
+        }
+
+        .result-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .tracking-id {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-light);
+        }
+
+        .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        .badge-success { background-color: #DCFCE7; color: var(--success); }
+        .badge-pending { background-color: #FEF3C7; color: var(--warning); }
+        .badge-danger { background-color: #FEE2E2; color: var(--danger); }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #F1F5F9;
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-weight: 700;
+        }
+
+        .timeline-section {
+            margin-top: 30px;
+        }
+
+        .timeline-title {
+            font-size: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 24px;
+            border-left: 2px solid var(--border);
+            margin-left: 10px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -32px;
+            top: 4px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--border);
+            border: 3px solid var(--card-bg);
+            transition: all 0.2s;
+        }
+
+        .timeline-item.completed .timeline-dot {
+            background-color: var(--success);
+        }
+
+        .timeline-item.active .timeline-dot {
+            background-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(47, 91, 255, 0.2);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timeline-status {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .timeline-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .timeline-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .timeline-actor {
+            font-size: 10px;
+            color: var(--primary-light);
+            font-weight: 700;
+            margin-top: 2px;
+            text-transform: uppercase;
+        }
+
+        .qr-display-box {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #F8FAFC;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .qr-display-box img {
+            width: 80px;
+            height: 80px;
+            background: white;
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .qr-display-box p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .invoice-action-box {
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .btn-invoice {
+            display: inline-block;
+            text-decoration: none;
+            background-color: var(--card-bg);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .btn-invoice:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .alert-error {
+            background-color: #FEE2E2;
+            color: var(--danger);
+            border: 1px solid #FCA5A5;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            font-family: inherit;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-outline {
+            background-color: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background-color: #F8FAFC;
+        }
+    </style>
+    <!-- Load html5-qrcode library from CDN -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+    <div class="tracking-container">
+        <!-- SEARCH -->
+        <div class="search-card">
+            <h1>Track Your Parcel</h1>
+            <p>Enter your tracking code or scan the QR code to see the live status history of your package.</p>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-error">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form class="search-form" method="POST">
+                {% csrf_token %}
+                <input class="form-control" type="text" name="tracking_number" placeholder="e.g. ABR1" value="{{ searched_number|default:'' }}" required>
+                <button class="btn-scan-trigger" type="button" onclick="startScanner()" title="Scan QR Code">📷</button>
+                <button class="btn-search" type="submit">Track</button>
+            </form>
+        </div>
+
+        <!-- RESULTS -->
+        {% if parcel %}
+            <div class="result-card">
+                <div class="result-header">
+                    <div>
+                        <span class="tracking-id">{{ parcel.tracking_number }}</span>
+                        <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Created on {{ parcel.created_at|date:"d M Y, H:i" }}</div>
+                    </div>
+                    <span class="badge {% if parcel.status == 'DELIVERED' %}badge-success{% elif parcel.status == 'REFUSED' %}badge-danger{% else %}badge-pending{% endif %}">
+                        {{ parcel.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Sender:</span>
+                    <span class="info-value">{{ parcel.sender_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Receiver:</span>
+                    <span class="info-value">{{ parcel.receiver_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Assigned Driver:</span>
+                    <span class="info-value">
+                        {% if parcel.driver %}
+                            {{ parcel.driver.full_name }}
+                        {% else %}
+                            Not Assigned Yet
+                        {% endif %}
+                    </span>
+                </div>
+                {% if parcel.driver %}
+                <div class="info-row">
+                    <span class="info-label">Driver Phone:</span>
+                    <span class="info-value">
+                        <a href="tel:{{ parcel.driver.phone }}" style="color:var(--primary-light);text-decoration:none;">{{ parcel.driver.phone }}</a>
+                    </span>
+                </div>
+                {% endif %}
+                <div class="info-row">
+                    <span class="info-label">Route:</span>
+                    <span class="info-value">{{ parcel.departure_city }} → {{ parcel.destination_city }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Amount (COD):</span>
+                    <span class="info-value" style="color:var(--warning);">{{ parcel.amount }} MAD</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Payment Status:</span>
+                    <span class="info-value">
+                        <span class="badge {% if parcel.payment_status == 'PAID' %}badge-success{% elif parcel.payment_status == 'REFUSED' %}badge-danger{% else %}badge-pending{% endif %}">
+                            {{ parcel.get_payment_status_display }}
+                        </span>
+                    </span>
+                </div>
+
+                <!-- TIMELINE -->
+                <div class="timeline-section">
+                    <div class="timeline-title">Delivery Progress</div>
+                    <div class="timeline">
+                        {% for status in statuses %}
+                            <div class="timeline-item {% if forloop.last %}active{% else %}completed{% endif %}">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-header">
+                                    <span class="timeline-status">{{ status.status }}</span>
+                                    <span class="timeline-time">{{ status.timestamp|date:"d M Y, H:i" }}</span>
+                                </div>
+                                <div class="timeline-desc">{{ status.note }}</div>
+                                {% if status.actor_driver or status.actor_user %}
+                                <div class="timeline-actor">
+                                    Operator: 
+                                    {% if status.actor_driver %}
+                                        Driver {{ status.actor_driver.full_name }}
+                                    {% else %}
+                                        Staff ({{ status.actor_user.username }})
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- QR DISPLAY -->
+                <div class="qr-display-box">
+                    <img src="{% static 'qr_codes/' %}{{ parcel.tracking_number }}.png" alt="QR Code">
+                    <div>
+                        <h4 style="margin:0 0 4px 0;font-size:13px;font-weight:700;">Share tracking QR</h4>
+                        <p>This QR code can be printed or shared. Scanning it opens this tracking details page directly.</p>
+                    </div>
+                </div>
+
+                <!-- INVOICE ACTION -->
+                <div class="invoice-action-box">
+                    <a href="{% url 'invoice' parcel.tracking_number %}" class="btn-invoice">View & Print Invoice</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- SCANNER MODAL -->
+    <div id="scanner-modal" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 24px; padding: 24px; width: 100%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 1px solid var(--border); text-align: center;">
+            <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 800;">Scan QR Code</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 20px 0;">Point your camera at the parcel's QR code to scan it.</p>
+            <div id="reader" style="width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px;"></div>
+            <button class="btn btn-outline" onclick="stopScanner()" style="width: 100%; padding: 12px;">Cancel</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        let html5QrcodeScanner = null;
+
+        function startScanner() {
+            document.getElementById('scanner-modal').style.display = 'flex';
+            html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", 
+                { fps: 10, qrbox: {width: 250, height: 250} },
+                /* verbose= */ false
+            );
+            
+            function onScanSuccess(decodedText, decodedResult) {
+                console.log(`Code matched = ${decodedText}`, decodedResult);
+                
+                // Clear the scanner and hide modal
+                html5QrcodeScanner.clear().then(() => {
+                    document.getElementById('scanner-modal').style.display = 'none';
+                    
+                    try {
+                        let url = new URL(decodedText);
+                        let trackingNum = url.searchParams.get("tracking_number");
+                        if (trackingNum) {
+                            const inputField = document.querySelector('input[name="tracking_number"]');
+                            if (inputField) {
+                                inputField.value = trackingNum;
+                                inputField.closest('form').submit();
+                            }
+                        } else {
+                            alert("No tracking number found in QR URL.");
+                        }
+                    } catch (e) {
+                        // Treat as raw text tracking number
+                        const inputField = document.querySelector('input[name="tracking_number"]');
+                        if (inputField) {
+                            inputField.value = decodedText.trim();
+                            inputField.closest('form').submit();
+                        }
+                    }
+                }).catch(err => {
+                    console.error("Scanner clear error:", err);
+                });
+            }
+            
+            function onScanFailure(error) {
+                // Ignore scanning failures
+            }
+            
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        }
+
+        function stopScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear().then(() => {
+                    document.getElementById('scanner-modal').style.display = 'none';
+                }).catch(err => {
+                    document.getElementById('scanner-modal').style.display = 'none';
+                });
+            } else {
+                document.getElementById('scanner-modal').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

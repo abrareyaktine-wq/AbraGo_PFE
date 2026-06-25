@@ -1,0 +1,359 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - {{ parcel.tracking_number }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1A3BAA;
+            --primary-light: #2F5BFF;
+            --text: #1A2340;
+            --text-muted: #64748B;
+            --bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --border: #E2E8F0;
+            --success: #16A34A;
+            --pending: #D97706;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .invoice-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+        }
+
+        .logo-section h1 {
+            color: var(--primary);
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0 0 5px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-section p {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .invoice-details {
+            text-align: right;
+        }
+
+        .invoice-details h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0 0 8px 0;
+        }
+
+        .invoice-details p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 3px 0;
+        }
+
+        .party-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .party-box h3 {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary-light);
+            margin: 0 0 12px 0;
+        }
+
+        .party-box p {
+            font-size: 14px;
+            margin: 6px 0;
+            line-height: 1.5;
+        }
+
+        .party-box .name {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text);
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        .items-table th {
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border);
+            padding: 12px;
+            font-weight: 600;
+        }
+
+        .items-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background-color: #DCFCE7;
+            color: var(--success);
+        }
+
+        .badge-pending {
+            background-color: #FEF3C7;
+            color: var(--pending);
+        }
+
+        .summary-section {
+            display: grid;
+            grid-template-columns: 1fr 250px;
+            gap: 40px;
+            align-items: flex-start;
+            border-top: 2px solid var(--border);
+            padding-top: 30px;
+        }
+
+        .qr-code-box {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: #F1F5F9;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .qr-code-box img {
+            width: 80px;
+            height: 80px;
+            background: white;
+            padding: 4px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .qr-code-box p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .totals-box {
+            background-color: #F8FAFC;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .total-row.grand-total {
+            border-top: 2px dashed var(--border);
+            padding-top: 12px;
+            margin-top: 12px;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn {
+            font-family: inherit;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+
+        .btn-outline {
+            background-color: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg);
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .invoice-card {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+            .actions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-card">
+        <div class="header">
+            <div class="logo-section">
+                <h1>AbraGo</h1>
+                <p>Smart Logistics & Delivery</p>
+            </div>
+            <div class="invoice-details">
+                <h2>INVOICE</h2>
+                <p><strong>Tracking Number:</strong> {{ parcel.tracking_number }}</p>
+                <p><strong>Date:</strong> {{ parcel.created_at|date:"d M Y" }}</p>
+            </div>
+        </div>
+
+        <div class="party-details">
+            <div class="party-box">
+                <h3>Sender Information</h3>
+                <p class="name">{{ parcel.sender_name }}</p>
+                <p>Departure City: <strong>{{ parcel.departure_city }}</strong></p>
+            </div>
+            <div class="party-box">
+                <h3>Receiver Information</h3>
+                <p class="name">{{ parcel.receiver_name }}</p>
+                <p>Phone: {{ parcel.receiver_phone }}</p>
+                <p>Address: {{ parcel.delivery_address }}</p>
+                <p>Destination: <strong>{{ parcel.destination_city }}</strong></p>
+            </div>
+        </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Weight</th>
+                    <th>Driver Assigned</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Standard Shipping - Colis delivery service.<br><span style="color:var(--text-muted);font-size:12px;">Note: {{ parcel.note|default:"N/A" }}</span></td>
+                    <td>{{ parcel.weight }} KG</td>
+                    <td>{{ parcel.driver.full_name|default:"Not Assigned" }}</td>
+                    <td>
+                        <span class="badge {% if parcel.status == 'DELIVERED' %}badge-success{% else %}badge-pending{% endif %}">
+                            {{ parcel.get_status_display }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="summary-section">
+            <div class="qr-code-box">
+                <img src="{% static 'qr_codes/' %}{{ parcel.tracking_number }}.png" alt="Scan tracking code">
+                <div>
+                    <h4 style="margin:0 0 4px 0;font-size:13px;font-weight:700;">Track with QR</h4>
+                    <p>Scan this QR code with any mobile device to view real-time tracking details and updates.</p>
+                </div>
+            </div>
+
+            <div class="totals-box">
+                <div class="total-row">
+                    <span style="color:var(--text-muted)">Payment Type:</span>
+                    <strong>{% if parcel.is_cod_paid %}COD (Settled){% else %}Cash on Delivery (COD){% endif %}</strong>
+                </div>
+                <div class="total-row">
+                    <span style="color:var(--text-muted)">COD Cash Status:</span>
+                    <span>
+                        {% if parcel.is_cod_paid %}
+                        <span style="color:var(--success);font-weight:700;">Paid</span>
+                        {% else %}
+                        <span style="color:var(--pending);font-weight:700;">Pending Collection</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="total-row grand-total">
+                    <span>Total Amount:</span>
+                    <span>{{ parcel.amount }} MAD</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-outline" onclick="window.history.back()">Back</button>
+            <button class="btn btn-primary" onclick="window.print()">Print Invoice</button>
+        </div>
+    </div>
+</body>
+</html>

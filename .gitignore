@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+venv/
+env/
+.env/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+
+# Static files (collected)
+staticfiles/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Scratch / temp files
+scratch/
+*.zip
+*_pa.py
+check_*.py
+fix_wsgi*.py
+get_*.py
+push_update.py
+remove_sidebar.py
+run_remote_commands.py
+update_passwords.py
+list_drivers.py
