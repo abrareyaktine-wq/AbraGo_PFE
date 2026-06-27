@@ -41,6 +41,9 @@ class Driver(models.Model):
         return self.full_name
 
 
+# -----------------------------------------------------------------------------
+# PARCEL / PACKAGE MODEL (Core Package Creation Feature)
+# -----------------------------------------------------------------------------
 class Parcel(models.Model):
 
     STATUS_CHOICES = [
@@ -116,6 +119,9 @@ class Parcel(models.Model):
         return self.tracking_number
 
     def save(self, *args, **kwargs):
+        # FEATURE: Automatic COD (Cash on Delivery) Management
+        # Automatically updates the payment status to 'PAID' when a package
+        # is marked as 'DELIVERED'.
         if self.status == 'DELIVERED' and (self.payment_status == 'PAID' or self.is_cod_paid):
             self.payment_status = 'PAID'
             self.is_cod_paid = True
@@ -126,6 +132,9 @@ class Parcel(models.Model):
         super().save(*args, **kwargs)
 
         if self.status == 'DELIVERED' and self.is_cod_paid and not self.cod_credited_to_wallet and self.driver:
+            # FEATURE: Driver Wallet Credit System
+            # When a package is delivered and COD is paid, the system
+            # automatically credits the amount to the driver's virtual wallet.
             wallet, created = DriverWallet.objects.get_or_create(driver=self.driver)
             wallet.balance += self.amount
             wallet.save()
@@ -140,6 +149,9 @@ class Parcel(models.Model):
             self.cod_credited_to_wallet = True
 
 
+# -----------------------------------------------------------------------------
+# PACKAGE STATUS HISTORY (Tracking System)
+# -----------------------------------------------------------------------------
 class ParcelStatus(models.Model):
 
     parcel = models.ForeignKey(
@@ -174,6 +186,9 @@ class ParcelStatus(models.Model):
         return f"{self.parcel.tracking_number} - {self.status}"
 
 
+# -----------------------------------------------------------------------------
+# DRIVER WALLET & TRANSACTIONS (Financial Features)
+# -----------------------------------------------------------------------------
 class DriverWallet(models.Model):
     driver = models.OneToOneField(
         Driver,

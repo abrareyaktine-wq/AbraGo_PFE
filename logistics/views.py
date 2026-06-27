@@ -11,7 +11,14 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Parcel, ParcelStatus, Driver, DriverWallet, WalletTransaction, City, DriverApplication, Hub
 
+# -----------------------------------------------------------------------------
+# LANDING PAGE & PUBLIC FEATURES
+# -----------------------------------------------------------------------------
 def landing_page(request):
+    """
+    Handles the public landing page.
+    Includes the Driver Application form logic (creation and email notification).
+    """
     if request.method == "POST":
         full_name = request.POST.get('full_name')
         email = request.POST.get('email')
@@ -54,7 +61,18 @@ def landing_page(request):
     return render(request, "landing_page.html", context)
 
 
+# -----------------------------------------------------------------------------
+# ADMIN DASHBOARD & PACKAGE MANAGEMENT
+# -----------------------------------------------------------------------------
 def home(request):
+    """
+    Admin Dashboard View.
+    Responsible for:
+    - Displaying statistics (revenue, package statuses, etc.)
+    - Handling New Package Creation
+    - Generating QR Codes automatically
+    - Auto-assigning packages to drivers based on workload and city
+    """
     created_parcel = None
     qr_code_url = None
     success = False
@@ -100,15 +118,17 @@ def home(request):
             qr_code_url = f"{settings.STATIC_URL}qr_codes/{parcel.tracking_number}.png"
             success = True
         else:
-            # Unique tracking number generation
+            # FEATURE: Unique Tracking Number Generation
+            # Generates a unique tracking ID like ABR1, ABR2, etc.
             count = Parcel.objects.count()
             tracking_number = "ABR" + str(count + 1)
             while Parcel.objects.filter(tracking_number=tracking_number).exists():
                 count += 1
                 tracking_number = "ABR" + str(count + 1)
 
-            # Auto driver assignment:
-            # Find drivers who are available in the departure city
+            # FEATURE: Auto-Assignment Algorithm
+            # Automatically finds available drivers in the departure city
+            # and assigns the package to the driver with the least active packages.
             available_drivers = Driver.objects.filter(is_available=True, city__iexact=departure_city)
             assigned_driver = None
             if available_drivers.exists():
@@ -148,7 +168,8 @@ def home(request):
                 actor_user=actor_user
             )
 
-            # Generate tracking URL and encode in QR code
+            # FEATURE: QR Code Generation
+            # Generates a dynamic QR code containing the tracking URL of the package
             tracking_url = request.build_absolute_uri(reverse('tracking')) + f"?tracking_number={tracking_number}"
             qr = qrcode.make(tracking_url)
 
@@ -258,7 +279,14 @@ def home(request):
     return render(request, "home.html", context)
 
 
+# -----------------------------------------------------------------------------
+# PUBLIC TRACKING SYSTEM
+# -----------------------------------------------------------------------------
 def tracking(request):
+    """
+    Public tracking view. Allows anyone to track a package via tracking number.
+    Displays the full history of the package's journey.
+    """
     parcel = None
     statuses = None
     current_status = None
@@ -287,7 +315,15 @@ def tracking(request):
     )
 
 
+# -----------------------------------------------------------------------------
+# INVOICE GENERATION / PRINTING
+# -----------------------------------------------------------------------------
 def invoice(request, tracking_number):
+    """
+    Generates a printable invoice for a package.
+    Includes the QR code so it can be scanned easily.
+    Can be printed or saved as PDF using Ctrl+P (browser print).
+    """
     parcel = get_object_or_404(Parcel, tracking_number__iexact=tracking_number)
     # Check if QR Code exists, generate if missing
     qr_folder = os.path.join(settings.BASE_DIR, "static", "qr_codes")
@@ -378,7 +414,17 @@ def driver_update_city(request):
     return redirect('driver_dashboard')
 
 
+# -----------------------------------------------------------------------------
+# DRIVER ACTIONS & LOGISTICS LOGIC
+# -----------------------------------------------------------------------------
 def driver_update_status(request, tracking_number):
+    """
+    Core logistics logic for drivers updating package statuses.
+    Handles:
+    - Normal status updates (Picked up, In Transit, Delivered)
+    - Cash on Delivery (COD) logic
+    - Hub drop-offs and dynamic auto-reassignment
+    """
     driver_id = request.session.get('driver_id')
     if not driver_id:
         return redirect('driver_login')
@@ -409,6 +455,10 @@ def driver_update_status(request, tracking_number):
                 driver.city = parcel.destination_city
                 driver.save()
             elif new_status == 'AT_HUB':
+                # FEATURE: Hub Drop-off & Smart Reassignment
+                # If a driver drops a package at a hub, they are unassigned.
+                # The system then auto-assigns it to another driver in that hub's city
+                # who is heading to the package's final destination.
                 hub_id = request.POST.get('hub_id')
                 if hub_id:
                     from .models import Hub

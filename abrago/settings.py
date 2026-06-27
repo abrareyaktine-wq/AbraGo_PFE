@@ -25,6 +25,9 @@ SECRET_KEY = 'django-insecure-*f2@6aaet^c1%=velp7*d(4^by)y*y72)-x44&5#@onrsi4pfh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# FEATURE: DEPLOYMENT - ALLOWED HOSTS
+# This allows the Django app to be served on the PythonAnywhere live domain
+# as well as the local development environment (localhost/127.0.0.1).
 ALLOWED_HOSTS = ['Abrare.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 
@@ -122,6 +125,10 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+# FEATURE: DEPLOYMENT - STATIC FILES
+# STATIC_ROOT is required for deployment on PythonAnywhere.
+# It tells the 'collectstatic' command where to gather all static files (CSS, JS, images)
+# so the PythonAnywhere web server can serve them efficiently to users.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Email Configuration for Gmail
