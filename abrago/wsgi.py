@@ -8,12 +8,11 @@ https://docs.djangoproject.com/en/6.0/howto/deployment/wsgi/
 """
 
 # -----------------------------------------------------------------------------
-# DEPLOYMENT CONFIGURATION (PythonAnywhere)
+# CONFIGURATION DE DÉPLOIEMENT (PythonAnywhere)
 # -----------------------------------------------------------------------------
-# FEATURE: Web Server Gateway Interface (WSGI)
-# This file is used by the PythonAnywhere server to communicate with
-# the Django application. It serves as the bridge between the live web server
-# and our Python code.
+# FONCTIONNALITÉ : Web Server Gateway Interface (WSGI)
+# Fichier utilisé par le serveur PythonAnywhere pour communiquer avec
+# l'application Django. Fait le pont entre le serveur web en direct et le code Python.
 
 import os
 

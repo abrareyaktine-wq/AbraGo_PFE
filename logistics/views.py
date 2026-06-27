@@ -12,12 +12,12 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Parcel, ParcelStatus, Driver, DriverWallet, WalletTransaction, City, DriverApplication, Hub
 
 # -----------------------------------------------------------------------------
-# LANDING PAGE & PUBLIC FEATURES
+# PAGE D'ACCUEIL & FONCTIONNALITÉS PUBLIQUES
 # -----------------------------------------------------------------------------
 def landing_page(request):
     """
-    Handles the public landing page.
-    Includes the Driver Application form logic (creation and email notification).
+    Gère la page d'accueil publique.
+    Inclut la logique du formulaire de candidature des chauffeurs (création et notification par e-mail).
     """
     if request.method == "POST":
         full_name = request.POST.get('full_name')
@@ -62,16 +62,16 @@ def landing_page(request):
 
 
 # -----------------------------------------------------------------------------
-# ADMIN DASHBOARD & PACKAGE MANAGEMENT
+# TABLEAU DE BORD ADMIN & GESTION DES COLIS
 # -----------------------------------------------------------------------------
 def home(request):
     """
-    Admin Dashboard View.
-    Responsible for:
-    - Displaying statistics (revenue, package statuses, etc.)
-    - Handling New Package Creation
-    - Generating QR Codes automatically
-    - Auto-assigning packages to drivers based on workload and city
+    Vue du tableau de bord Admin.
+    Responsable de :
+    - L'affichage des statistiques (revenus, statuts des colis, etc.)
+    - La création de nouveaux colis
+    - La génération automatique de QR Codes
+    - L'assignation automatique des colis aux chauffeurs selon la charge de travail
     """
     created_parcel = None
     qr_code_url = None
@@ -118,17 +118,17 @@ def home(request):
             qr_code_url = f"{settings.STATIC_URL}qr_codes/{parcel.tracking_number}.png"
             success = True
         else:
-            # FEATURE: Unique Tracking Number Generation
-            # Generates a unique tracking ID like ABR1, ABR2, etc.
+            # FONCTIONNALITÉ : Génération de numéro de suivi unique
+            # Génère un ID de suivi unique comme ABR1, ABR2, etc.
             count = Parcel.objects.count()
             tracking_number = "ABR" + str(count + 1)
             while Parcel.objects.filter(tracking_number=tracking_number).exists():
                 count += 1
                 tracking_number = "ABR" + str(count + 1)
 
-            # FEATURE: Auto-Assignment Algorithm
-            # Automatically finds available drivers in the departure city
-            # and assigns the package to the driver with the least active packages.
+            # FONCTIONNALITÉ : Algorithme d'assignation automatique
+            # Trouve automatiquement les chauffeurs disponibles dans la ville de départ
+            # et assigne le colis au chauffeur ayant le moins de colis actifs.
             available_drivers = Driver.objects.filter(is_available=True, city__iexact=departure_city)
             assigned_driver = None
             if available_drivers.exists():
@@ -168,8 +168,8 @@ def home(request):
                 actor_user=actor_user
             )
 
-            # FEATURE: QR Code Generation
-            # Generates a dynamic QR code containing the tracking URL of the package
+            # FONCTIONNALITÉ : Génération de QR Code
+            # Génère un code QR dynamique contenant l'URL de suivi du colis
             tracking_url = request.build_absolute_uri(reverse('tracking')) + f"?tracking_number={tracking_number}"
             qr = qrcode.make(tracking_url)
 
@@ -280,12 +280,12 @@ def home(request):
 
 
 # -----------------------------------------------------------------------------
-# PUBLIC TRACKING SYSTEM
+# SYSTÈME DE SUIVI PUBLIC
 # -----------------------------------------------------------------------------
 def tracking(request):
     """
-    Public tracking view. Allows anyone to track a package via tracking number.
-    Displays the full history of the package's journey.
+    Vue de suivi public. Permet à quiconque de suivre un colis via son numéro.
+    Affiche l'historique complet et détaillé du trajet.
     """
     parcel = None
     statuses = None
@@ -316,13 +316,13 @@ def tracking(request):
 
 
 # -----------------------------------------------------------------------------
-# INVOICE GENERATION / PRINTING
+# GÉNÉRATION / IMPRESSION DE FACTURE (INVOICE)
 # -----------------------------------------------------------------------------
 def invoice(request, tracking_number):
     """
-    Generates a printable invoice for a package.
-    Includes the QR code so it can be scanned easily.
-    Can be printed or saved as PDF using Ctrl+P (browser print).
+    Génère une facture imprimable pour un colis.
+    Inclut le QR Code pour un scan facile.
+    Peut être imprimée ou sauvegardée en PDF via Ctrl+P.
     """
     parcel = get_object_or_404(Parcel, tracking_number__iexact=tracking_number)
     # Check if QR Code exists, generate if missing
@@ -415,15 +415,15 @@ def driver_update_city(request):
 
 
 # -----------------------------------------------------------------------------
-# DRIVER ACTIONS & LOGISTICS LOGIC
+# ACTIONS CHAUFFEUR & LOGIQUE LOGISTIQUE
 # -----------------------------------------------------------------------------
 def driver_update_status(request, tracking_number):
     """
-    Core logistics logic for drivers updating package statuses.
-    Handles:
-    - Normal status updates (Picked up, In Transit, Delivered)
-    - Cash on Delivery (COD) logic
-    - Hub drop-offs and dynamic auto-reassignment
+    Logique centrale pour les mises à jour de statut par les chauffeurs.
+    Gère :
+    - Les mises à jour normales (Récupéré, En route, Livré)
+    - La logique de paiement à la livraison (COD)
+    - Les dépôts en Hub (relais) et la réassignation automatique
     """
     driver_id = request.session.get('driver_id')
     if not driver_id:
@@ -455,10 +455,10 @@ def driver_update_status(request, tracking_number):
                 driver.city = parcel.destination_city
                 driver.save()
             elif new_status == 'AT_HUB':
-                # FEATURE: Hub Drop-off & Smart Reassignment
-                # If a driver drops a package at a hub, they are unassigned.
-                # The system then auto-assigns it to another driver in that hub's city
-                # who is heading to the package's final destination.
+                # FONCTIONNALITÉ : Dépôt en Hub & Réassignation Intelligente
+                # Si un chauffeur dépose un colis dans un Hub, il est désassigné.
+                # Le système l'assigne alors automatiquement à un autre chauffeur 
+                # de la ville du Hub qui se dirige vers la destination finale.
                 hub_id = request.POST.get('hub_id')
                 if hub_id:
                     from .models import Hub

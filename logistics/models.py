@@ -42,7 +42,7 @@ class Driver(models.Model):
 
 
 # -----------------------------------------------------------------------------
-# PARCEL / PACKAGE MODEL (Core Package Creation Feature)
+# MODÈLE COLIS / PACKAGE (Fonctionnalité centrale de création)
 # -----------------------------------------------------------------------------
 class Parcel(models.Model):
 
@@ -119,9 +119,9 @@ class Parcel(models.Model):
         return self.tracking_number
 
     def save(self, *args, **kwargs):
-        # FEATURE: Automatic COD (Cash on Delivery) Management
-        # Automatically updates the payment status to 'PAID' when a package
-        # is marked as 'DELIVERED'.
+        # FONCTIONNALITÉ : Gestion automatique du COD (Paiement à la livraison)
+        # Met à jour automatiquement le statut de paiement sur 'PAID' (Payé) 
+        # quand un colis est marqué comme 'LIVRÉ'.
         if self.status == 'DELIVERED' and (self.payment_status == 'PAID' or self.is_cod_paid):
             self.payment_status = 'PAID'
             self.is_cod_paid = True
@@ -132,9 +132,9 @@ class Parcel(models.Model):
         super().save(*args, **kwargs)
 
         if self.status == 'DELIVERED' and self.is_cod_paid and not self.cod_credited_to_wallet and self.driver:
-            # FEATURE: Driver Wallet Credit System
-            # When a package is delivered and COD is paid, the system
-            # automatically credits the amount to the driver's virtual wallet.
+            # FONCTIONNALITÉ : Système de crédit du portefeuille chauffeur
+            # Quand un colis est livré et payé, le système crédite
+            # automatiquement le montant sur le portefeuille virtuel du chauffeur.
             wallet, created = DriverWallet.objects.get_or_create(driver=self.driver)
             wallet.balance += self.amount
             wallet.save()
@@ -150,7 +150,7 @@ class Parcel(models.Model):
 
 
 # -----------------------------------------------------------------------------
-# PACKAGE STATUS HISTORY (Tracking System)
+# HISTORIQUE DES STATUTS DU COLIS (Système de suivi)
 # -----------------------------------------------------------------------------
 class ParcelStatus(models.Model):
 
@@ -187,7 +187,7 @@ class ParcelStatus(models.Model):
 
 
 # -----------------------------------------------------------------------------
-# DRIVER WALLET & TRANSACTIONS (Financial Features)
+# PORTEFEUILLE CHAUFFEUR & TRANSACTIONS (Fonctionnalités financières)
 # -----------------------------------------------------------------------------
 class DriverWallet(models.Model):
     driver = models.OneToOneField(
