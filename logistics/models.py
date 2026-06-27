@@ -144,7 +144,7 @@ class Parcel(models.Model):
                 transaction_type='COD_COLLECTION',
                 amount=self.amount
             )
-            # Use update to avoid infinite recursion
+            # Utiliser update pour éviter une récursion infinie
             Parcel.objects.filter(id=self.id).update(cod_credited_to_wallet=True)
             self.cod_credited_to_wallet = True
 
@@ -253,7 +253,7 @@ class UserProfile(models.Model):
         return f"{self.user.username} Profile"
 
 class CompanySettings(models.Model):
-    # Singleton model
+    # Modèle Singleton
     company_name = models.CharField(max_length=100, default='AbraGo Logistics')
     contact_email = models.EmailField(default='contact@abrago.ma')
     support_phone = models.CharField(max_length=20, default='+212 600-000-000')
@@ -261,7 +261,7 @@ class CompanySettings(models.Model):
     tax_id = models.CharField(max_length=50, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        # Ensure only one instance exists
+        # S'assurer qu'une seule instance existe
         self.pk = 1
         super().save(*args, **kwargs)
 

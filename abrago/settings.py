@@ -12,17 +12,17 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Construisez les chemins à l'intérieur du projet comme ceci : BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
+# Paramètres de développement pour démarrage rapide - inadaptés à la production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# AVERTISSEMENT DE SÉCURITÉ : gardez la clé secrète utilisée en production secrète !
 SECRET_KEY = 'django-insecure-*f2@6aaet^c1%=velp7*d(4^by)y*y72)-x44&5#@onrsi4pfh'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# AVERTISSEMENT DE SÉCURITÉ : ne lancez pas l'application avec debug activé en production !
 DEBUG = True
 
 # FONCTIONNALITÉ : DÉPLOIEMENT - HÔTES AUTORISÉS
@@ -31,7 +31,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['Abrare.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 
-# Application definition
+# Définition de l'application
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -74,7 +74,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'abrago.wsgi.application'
 
 
-# Database
+# Base de données
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
@@ -85,7 +85,7 @@ DATABASES = {
 }
 
 
-# Password validation
+# Validation du mot de passe
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -104,7 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
+# Internationalisation
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
@@ -116,7 +116,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+# Fichiers statiques (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
@@ -131,16 +131,16 @@ STATICFILES_DIRS = [
 # pour que le serveur web puisse les afficher correctement aux utilisateurs.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Email Configuration for Gmail
+# Configuration de l'e-mail pour Gmail
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-# TODO: Replace with the actual email address and App Password to enable sending
+# TODO: Remplacer par l'adresse e-mail réelle et le mot de passe d'application pour activer l'envoi
 EMAIL_HOST_USER = 'abrareyaktine@gmail.com'
 EMAIL_HOST_PASSWORD = 'YOUR_APP_PASSWORD_HERE' 
 
-# Translation Configuration
+# Configuration de la traduction
 LANGUAGES = [
     ('en', 'English'),
     ('fr', 'French'),

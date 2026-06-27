@@ -35,16 +35,16 @@ def landing_page(request):
                 vehicle=vehicle
             )
             
-            # Send Email Notification
+            # Envoyer une notification par e-mail
             try:
                 subject = f"New Driver Application: {full_name}"
                 message = f"You have a new driver application!\n\nName: {full_name}\nEmail: {email}\nPhone: {phone}\nCity: {city}\nVehicle: {vehicle}"
                 send_mail(
                     subject,
                     message,
-                    'abrareyaktine@gmail.com', # From email
-                    ['abrareyaktine@gmail.com'], # To email
-                    fail_silently=True, # Will silently fail if password is not configured yet, preventing a crash
+                    'abrareyaktine@gmail.com', # Depuis l'e-mail
+                    ['abrareyaktine@gmail.com'], # Vers l'e-mail
+                    fail_silently=True, # Échouera silencieusement si le mot de passe n'est pas encore configuré, évitant un crash
                 )
             except Exception as e:
                 pass
@@ -89,7 +89,7 @@ def home(request):
         weight_raw = request.POST.get("weight")
         note = request.POST.get("note", "")
 
-        # Default values if fields are empty
+        # Valeurs par défaut si les champs sont vides
         amount = float(amount_raw) if amount_raw else 0.0
         weight = float(weight_raw) if weight_raw else 0.0
 
@@ -184,7 +184,7 @@ def home(request):
             qr_code_url = f"{settings.STATIC_URL}qr_codes/{tracking_number}.png"
             success = True
 
-    # Calculate statistics and context for home page (both GET and POST)
+    # Calcul des statistiques et du contexte pour la page d'accueil (GET et POST)
     total_packages_count = Parcel.objects.count()
     delivered_packages_count = Parcel.objects.filter(status='DELIVERED').count()
     pending_packages_count = Parcel.objects.exclude(status__in=['DELIVERED', 'REFUSED']).count()
@@ -192,22 +192,22 @@ def home(request):
     paid_invoices_count = Parcel.objects.filter(Q(is_cod_paid=True) | Q(payment_status='PAID')).count()
     pending_invoices_count = Parcel.objects.exclude(Q(is_cod_paid=True) | Q(payment_status='PAID')).exclude(payment_status='REFUSED').count()
 
-    # Delivery Status counts
+    # Décompte des statuts de livraison
     in_transit_count = Parcel.objects.filter(status='IN_TRANSIT').count()
     picked_up_count = Parcel.objects.filter(status='PICKED_UP').count()
     created_count = Parcel.objects.filter(status='CREATED').count()
     refused_count = Parcel.objects.filter(status='REFUSED').count()
 
-    # Calculate percentages for the UI charts
+    # Calcul des pourcentages pour les graphiques de l'interface utilisateur
     delivered_pct = int((delivered_packages_count / total_packages_count) * 100) if total_packages_count > 0 else 0
     in_transit_pct = int(((in_transit_count + picked_up_count) / total_packages_count) * 100) if total_packages_count > 0 else 0
     pending_pct = int((created_count / total_packages_count) * 100) if total_packages_count > 0 else 0
     refused_pct = int((refused_count / total_packages_count) * 100) if total_packages_count > 0 else 0
 
-    # Hub Package Tracker
+    # Suivi des colis en Hub
     hub_stats = Parcel.objects.filter(status='AT_HUB', current_hub__isnull=False).values('current_hub__name').annotate(count=Count('id')).order_by('-count')[:4]
 
-    # Driver Availability stats
+    # Statistiques de disponibilité des chauffeurs
     drivers_en_tournee = Driver.objects.filter(parcel__status__in=['CREATED', 'PICKED_UP', 'IN_TRANSIT']).distinct().count()
     drivers_en_pause = Driver.objects.filter(is_available=True).exclude(parcel__status__in=['CREATED', 'PICKED_UP', 'IN_TRANSIT']).distinct().count()
     drivers_hors_ligne = Driver.objects.filter(is_available=False).exclude(parcel__status__in=['CREATED', 'PICKED_UP', 'IN_TRANSIT']).distinct().count()
@@ -217,22 +217,22 @@ def home(request):
     en_pause_pct = int((drivers_en_pause / total_drivers) * 100) if total_drivers > 0 else 0
     hors_ligne_pct = int((drivers_hors_ligne / total_drivers) * 100) if total_drivers > 0 else 0
 
-    # Time Tracking (Packages currently PICKED_UP)
+    # Suivi du temps (Colis actuellement RÉCUPÉRÉS)
     picked_up_parcels = Parcel.objects.filter(status='PICKED_UP').select_related('driver').order_by('updated_at')[:4]
 
-    # Recent activity logs from ParcelStatus
+    # Journaux d'activité récents depuis ParcelStatus
     recent_activities = ParcelStatus.objects.select_related('parcel', 'actor_driver', 'actor_user').order_by('-timestamp')[:5]
 
     recent_parcels = Parcel.objects.select_related('driver', 'current_hub').order_by('-created_at')[:5]
     all_parcels = Parcel.objects.select_related('driver', 'current_hub').order_by('-created_at')
 
     context = {
-        # Create form status
+        # Statut du formulaire de création
         "success": success,
         "created_parcel": created_parcel,
         "qr_code_url": qr_code_url,
 
-        # Stats
+        # Statistiques
         "total_packages_count": total_packages_count,
         "delivered_packages_count": delivered_packages_count,
         "pending_packages_count": pending_packages_count,
@@ -240,7 +240,7 @@ def home(request):
         "paid_invoices_count": paid_invoices_count,
         "pending_invoices_count": pending_invoices_count,
 
-        # Delivery status chart details
+        # Détails du graphique des statuts de livraison
         "delivered_count": delivered_packages_count,
         "in_transit_count": in_transit_count + picked_up_count,
         "pending_count": created_count,
@@ -251,13 +251,13 @@ def home(request):
         "pending_pct": pending_pct,
         "refused_pct": refused_pct,
 
-        # Hub stats
+        # Statistiques des Hubs
         "hub_stats": hub_stats,
 
-        # Time tracking
+        # Suivi du temps
         "picked_up_parcels": picked_up_parcels,
 
-        # Driver availability
+        # Disponibilité des chauffeurs
         "drivers_en_tournee": drivers_en_tournee,
         "drivers_en_pause": drivers_en_pause,
         "drivers_hors_ligne": drivers_hors_ligne,
@@ -265,10 +265,10 @@ def home(request):
         "en_pause_pct": en_pause_pct,
         "hors_ligne_pct": hors_ligne_pct,
 
-        # Routes & Activity
+        # Trajets & Activité
         "recent_activities": recent_activities,
 
-        # Parcel lists
+        # Listes de colis
         "recent_parcels": recent_parcels,
         "all_parcels": all_parcels,
         "cities": City.objects.all().order_by('name'),
@@ -325,7 +325,7 @@ def invoice(request, tracking_number):
     Peut être imprimée ou sauvegardée en PDF via Ctrl+P.
     """
     parcel = get_object_or_404(Parcel, tracking_number__iexact=tracking_number)
-    # Check if QR Code exists, generate if missing
+    # Vérifie si le Code QR existe, le génère s'il manque
     qr_folder = os.path.join(settings.BASE_DIR, "static", "qr_codes")
     qr_path = os.path.join(qr_folder, f"{parcel.tracking_number}.png")
     if not os.path.exists(qr_path):
@@ -370,7 +370,7 @@ def driver_dashboard(request):
     active_parcels = Parcel.objects.filter(driver=driver).exclude(status='DELIVERED').exclude(status='REFUSED').order_by('-created_at')
     completed_parcels = Parcel.objects.filter(driver=driver, status__in=['DELIVERED', 'REFUSED']).order_by('-updated_at')
 
-    # Available status choices for the driver select dropdown
+    # Choix de statuts disponibles pour le menu déroulant du chauffeur
     status_choices = [
         ('PICKED_UP', 'Picked Up'),
         ('IN_TRANSIT', 'In Transit'),
@@ -440,18 +440,18 @@ def driver_update_status(request, tracking_number):
         if new_status:
             parcel.status = new_status
             if is_cod_paid or new_status == 'DELIVERED':
-                # Force cod paid to true if confirmed or delivered
+                # Force le paiement COD à Vrai si confirmé ou livré
                 parcel.is_cod_paid = True
                 parcel.payment_status = 'PAID'
                 
-                # Update driver's location to the destination city
+                # Met à jour la position du chauffeur vers la ville de destination
                 driver.city = parcel.destination_city
                 driver.save()
             elif new_status == 'REFUSED':
                 parcel.is_cod_paid = False
                 parcel.payment_status = 'REFUSED'
                 
-                # Update driver's location to the destination city
+                # Met à jour la position du chauffeur vers la ville de destination
                 driver.city = parcel.destination_city
                 driver.save()
             elif new_status == 'AT_HUB':
@@ -467,11 +467,11 @@ def driver_update_status(request, tracking_number):
                     parcel.driver = None
                     parcel.departure_city = hub.city
                     
-                    # Update driver's location to the hub city
+                    # Met à jour la position du chauffeur vers la ville du Hub
                     driver.city = hub.city
                     driver.save()
                     
-                    # Auto-assign logic
+                    # Logique d'assignation automatique
                     available_drivers = Driver.objects.filter(is_available=True, city__iexact=hub.city)
                     if driver:
                         available_drivers = available_drivers.exclude(id=driver.id)
@@ -622,11 +622,11 @@ def api_update_status(request, tracking_number):
                         note = f"Dropped at Hub {hub.name}. Waiting for driver."
             parcel.save()
 
-            # Add history entry
+            # Ajouter une entrée d'historique
             actor_driver = None
             actor_user = None
 
-            # Determine actor
+            # Déterminer l'acteur
             driver_id = request.session.get('driver_id')
             if driver_id:
                 try:
@@ -715,7 +715,7 @@ def api_login(request):
         from django.contrib.auth.models import User
         from django.contrib.auth import authenticate, login as django_login
 
-        # Resolve email to username if they entered email
+        # Résout l'e-mail en nom d'utilisateur s'ils ont saisi un e-mail
         username = username_or_email
         if '@' in username_or_email:
             user_obj = User.objects.filter(email__iexact=username_or_email).first()
@@ -728,7 +728,7 @@ def api_login(request):
             if user.is_active:
                 django_login(request, user)
                 role = 'admin' if user.is_superuser else 'client'
-                # Format username nicely
+                # Formate joliment le nom d'utilisateur
                 username_display = user.first_name if user.first_name else user.username.capitalize()
                 return JsonResponse({
                     'success': True,
@@ -772,12 +772,12 @@ def api_settings_profile(request):
     elif request.method == 'POST':
         try:
             data = json.loads(request.body)
-            # Update User
+            # Mettre à jour l'utilisateur
             request.user.first_name = data.get('first_name', request.user.first_name)
             request.user.last_name = data.get('last_name', request.user.last_name)
             request.user.email = data.get('email', request.user.email)
             request.user.save()
-            # Update Profile
+            # Mettre à jour le profil
             profile.phone = data.get('phone', profile.phone)
             profile.language = data.get('language', profile.language)
             profile.notify_new_package = data.get('notify_new_package', profile.notify_new_package)
