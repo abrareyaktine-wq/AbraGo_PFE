@@ -80,7 +80,6 @@ def home(request):
     if request.method == "GET":
         created_parcel_id = request.session.pop('created_parcel', None)
         if created_parcel_id:
-            from .models import Parcel
             created_parcel = Parcel.objects.filter(tracking_number=created_parcel_id).first()
             if created_parcel:
                 success = True
