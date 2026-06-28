@@ -77,6 +77,15 @@ def home(request):
     qr_code_url = None
     success = False
 
+    if request.method == "GET":
+        created_parcel_id = request.session.pop('created_parcel', None)
+        if created_parcel_id:
+            from .models import Parcel
+            created_parcel = Parcel.objects.filter(tracking_number=created_parcel_id).first()
+            if created_parcel:
+                success = True
+                qr_code_url = f"{settings.STATIC_URL}qr_codes/{created_parcel.tracking_number}.png"
+
     if request.method == "POST":
         edit_tracking = request.POST.get("edit_tracking")
         sender_name = request.POST.get("sender_name")
@@ -114,9 +123,8 @@ def home(request):
                 actor_user=actor_user
             )
             messages.success(request, f"Parcel {parcel.tracking_number} updated successfully!")
-            created_parcel = parcel
-            qr_code_url = f"{settings.STATIC_URL}qr_codes/{parcel.tracking_number}.png"
-            success = True
+            request.session['created_parcel'] = parcel.tracking_number
+            return redirect('home')
         else:
             # FONCTIONNALITÉ : Génération de numéro de suivi unique
             # Génère un ID de suivi unique comme ABR1, ABR2, etc.
@@ -170,7 +178,7 @@ def home(request):
 
             # FONCTIONNALITÉ : Génération de QR Code
             # Génère un code QR dynamique contenant l'URL de suivi du colis
-            tracking_url = request.build_absolute_uri(reverse('tracking')) + f"?tracking_number={tracking_number}"
+            tracking_url = f"{settings.SITE_URL}{reverse('tracking')}?tracking_number={tracking_number}"
             qr = qrcode.make(tracking_url)
 
             # Save the QR code image (Local Development)
@@ -187,9 +195,8 @@ def home(request):
                 qr.save(qr_path_root)
 
             messages.success(request, f"Parcel {tracking_number} created successfully!")
-            created_parcel = parcel
-            qr_code_url = f"{settings.STATIC_URL}qr_codes/{tracking_number}.png"
-            success = True
+            request.session['created_parcel'] = tracking_number
+            return redirect('home')
 
     # Calcul des statistiques et du contexte pour la page d'accueil (GET et POST)
     total_packages_count = Parcel.objects.count()
@@ -345,7 +352,7 @@ def invoice(request, tracking_number):
         if pa_qr_path:
             os.makedirs(os.path.dirname(pa_qr_path), exist_ok=True)
             
-        tracking_url = request.build_absolute_uri(reverse('tracking')) + f"?tracking_number={parcel.tracking_number}"
+        tracking_url = f"{settings.SITE_URL}{reverse('tracking')}?tracking_number={parcel.tracking_number}"
         qr = qrcode.make(tracking_url)
         qr.save(qr_path)
         if pa_qr_path:
@@ -982,27 +989,11 @@ def api_wallet_data(request):
     })
 
 
-def fix_qrs(request):
-    import qrcode
-    from .models import Parcel
-    import os
-    from django.conf import settings
+def delete_all(request):
+    from .models import Parcel, ParcelStatus
     from django.http import HttpResponse
 
-    base_url = "http://abrare.pythonanywhere.com/tracking/"
-    parcels = Parcel.objects.all()
-    count = 0
-    for parcel in parcels:
-        tracking_url = f"{base_url}?tracking_number={parcel.tracking_number}"
-        qr = qrcode.make(tracking_url)
-        
-        qr_folder = os.path.join(settings.BASE_DIR, "static", "qr_codes")
-        os.makedirs(qr_folder, exist_ok=True)
-        qr.save(os.path.join(qr_folder, f"{parcel.tracking_number}.png"))
-        
-        if hasattr(settings, 'STATIC_ROOT') and settings.STATIC_ROOT:
-            qr_folder_root = os.path.join(str(settings.STATIC_ROOT), "qr_codes")
-            os.makedirs(qr_folder_root, exist_ok=True)
-            qr.save(os.path.join(qr_folder_root, f"{parcel.tracking_number}.png"))
-        count += 1
-    return HttpResponse(f"Fixed {count} QR codes!")
+    count = Parcel.objects.count()
+    ParcelStatus.objects.all().delete()
+    Parcel.objects.all().delete()
+    return HttpResponse(f"SUCCESS: Deleted {count} parcels from the database!")

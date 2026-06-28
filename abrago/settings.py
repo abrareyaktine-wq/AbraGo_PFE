@@ -28,7 +28,10 @@ DEBUG = True
 # FONCTIONNALITÉ : DÉPLOIEMENT - HÔTES AUTORISÉS
 # Permet à l'application Django d'être accessible sur le domaine en direct
 # de PythonAnywhere ainsi qu'en local (localhost/127.0.0.1).
-ALLOWED_HOSTS = ['Abrare.pythonanywhere.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'abrare.pythonanywhere.com']
+
+# URL du site de production pour les codes QR
+SITE_URL = "http://abrare.pythonanywhere.com"
 
 
 # Définition de l'application
