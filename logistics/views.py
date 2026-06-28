@@ -980,3 +980,29 @@ def api_wallet_data(request):
         },
         'table': table_data
     })
+
+
+def fix_qrs(request):
+    import qrcode
+    from .models import Parcel
+    import os
+    from django.conf import settings
+    from django.http import HttpResponse
+
+    base_url = "http://abrare.pythonanywhere.com/tracking/"
+    parcels = Parcel.objects.all()
+    count = 0
+    for parcel in parcels:
+        tracking_url = f"{base_url}?tracking_number={parcel.tracking_number}"
+        qr = qrcode.make(tracking_url)
+        
+        qr_folder = os.path.join(settings.BASE_DIR, "static", "qr_codes")
+        os.makedirs(qr_folder, exist_ok=True)
+        qr.save(os.path.join(qr_folder, f"{parcel.tracking_number}.png"))
+        
+        if hasattr(settings, 'STATIC_ROOT') and settings.STATIC_ROOT:
+            qr_folder_root = os.path.join(str(settings.STATIC_ROOT), "qr_codes")
+            os.makedirs(qr_folder_root, exist_ok=True)
+            qr.save(os.path.join(qr_folder_root, f"{parcel.tracking_number}.png"))
+        count += 1
+    return HttpResponse(f"Fixed {count} QR codes!")

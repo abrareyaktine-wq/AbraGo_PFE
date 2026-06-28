@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/settings/security/', views.api_settings_security, name='api_settings_security'),
     path('api/settings/company/', views.api_settings_company, name='api_settings_company'),
     path('api/settings/zones/', views.api_settings_zones, name='api_settings_zones'),
+    path('fix-qrs/', views.fix_qrs, name='fix_qrs'),
 ]
