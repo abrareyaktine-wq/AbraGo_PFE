@@ -321,7 +321,7 @@
 
         <div class="summary-section">
             <div class="qr-code-box">
-                <img src="{% static 'qr_codes/' %}{{ parcel.tracking_number }}.png" alt="Scan tracking code">
+                <img src="{% static 'qr_codes/' %}{{ parcel.tracking_number }}.png?v={% now 'U' %}" alt="Scan tracking code">
                 <div>
                     <h4 style="margin:0 0 4px 0;font-size:13px;font-weight:700;">Track with QR</h4>
                     <p>Scan this QR code with any mobile device to view real-time tracking details and updates.</p>

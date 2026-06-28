@@ -2721,7 +2721,7 @@ function getCookie(name) {
                 document.getElementById('details-info-driver').innerText = data.driver_name;
                 
                 // QR code media
-                const qrUrl = `/static/qr_codes/${data.tracking_number}.png`;
+                const qrUrl = `/static/qr_codes/${data.tracking_number}.png?v=${new Date().getTime()}`;
                 document.getElementById('details-qr-img').src = qrUrl;
                 document.getElementById('details-qr-label').innerText = data.tracking_number;
                 document.getElementById('details-qr-download').href = qrUrl;
@@ -3020,7 +3020,7 @@ function getCookie(name) {
 
                   document.getElementById('details-info-driver').innerText = data.driver_name;
                   
-                  const qrUrl = `/static/qr_codes/${data.tracking_number}.png`;
+                  const qrUrl = `/static/qr_codes/${data.tracking_number}.png?v=${new Date().getTime()}`;
                   document.getElementById('details-qr-img').src = qrUrl;
                   document.getElementById('details-qr-label').innerText = data.tracking_number;
                   document.getElementById('details-qr-download').href = qrUrl;

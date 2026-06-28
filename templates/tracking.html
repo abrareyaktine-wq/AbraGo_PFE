@@ -445,7 +445,7 @@
 
                 <!-- QR DISPLAY -->
                 <div class="qr-display-box">
-                    <img src="{% static 'qr_codes/' %}{{ parcel.tracking_number }}.png" alt="QR Code">
+                    <img src="{% static 'qr_codes/' %}{{ parcel.tracking_number }}.png?v={% now 'U' %}" alt="QR Code">
                     <div>
                         <h4 style="margin:0 0 4px 0;font-size:13px;font-weight:700;">Share tracking QR</h4>
                         <p>This QR code can be printed or shared. Scanning it opens this tracking details page directly.</p>
