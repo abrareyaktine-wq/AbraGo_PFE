@@ -173,11 +173,18 @@ def home(request):
             tracking_url = request.build_absolute_uri(reverse('tracking')) + f"?tracking_number={tracking_number}"
             qr = qrcode.make(tracking_url)
 
-            # Save the QR code image
+            # Save the QR code image (Local Development)
             qr_folder = os.path.join(settings.BASE_DIR, "static", "qr_codes")
             os.makedirs(qr_folder, exist_ok=True)
             qr_path = os.path.join(qr_folder, f"{tracking_number}.png")
             qr.save(qr_path)
+            
+            # Save the QR code image (Production / PythonAnywhere)
+            if hasattr(settings, 'STATIC_ROOT') and settings.STATIC_ROOT:
+                qr_folder_root = os.path.join(str(settings.STATIC_ROOT), "qr_codes")
+                os.makedirs(qr_folder_root, exist_ok=True)
+                qr_path_root = os.path.join(qr_folder_root, f"{tracking_number}.png")
+                qr.save(qr_path_root)
 
             messages.success(request, f"Parcel {tracking_number} created successfully!")
             created_parcel = parcel
@@ -328,11 +335,21 @@ def invoice(request, tracking_number):
     # Vérifie si le Code QR existe, le génère s'il manque
     qr_folder = os.path.join(settings.BASE_DIR, "static", "qr_codes")
     qr_path = os.path.join(qr_folder, f"{parcel.tracking_number}.png")
-    if not os.path.exists(qr_path):
+    
+    pa_qr_path = None
+    if hasattr(settings, 'STATIC_ROOT') and settings.STATIC_ROOT:
+        pa_qr_path = os.path.join(str(settings.STATIC_ROOT), "qr_codes", f"{parcel.tracking_number}.png")
+        
+    if not os.path.exists(qr_path) or (pa_qr_path and not os.path.exists(pa_qr_path)):
         os.makedirs(qr_folder, exist_ok=True)
+        if pa_qr_path:
+            os.makedirs(os.path.dirname(pa_qr_path), exist_ok=True)
+            
         tracking_url = request.build_absolute_uri(reverse('tracking')) + f"?tracking_number={parcel.tracking_number}"
         qr = qrcode.make(tracking_url)
         qr.save(qr_path)
+        if pa_qr_path:
+            qr.save(pa_qr_path)
 
     return render(request, "invoice.html", {"parcel": parcel})
 
